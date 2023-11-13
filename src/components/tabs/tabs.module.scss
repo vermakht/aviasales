@@ -1,0 +1,36 @@
+@import 'src/variables';
+
+.container {
+    display: flex;
+    width: 31.375rem;
+}
+
+.item {
+    letter-spacing: 0.03125rem;
+
+    width: 10.5rem;
+    height: 3.125rem;
+    background: #FFF;
+
+    border: 0.063rem solid #DFE5EC;
+}
+
+.item:first-child {
+    border-top-left-radius: $border-radius;
+    border-bottom-left-radius: $border-radius;
+}
+
+.item:last-child {
+    border-top-right-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+}
+
+.item--active {
+    background: #2196F3;
+    border: none;
+    color: #FFF;
+
+    & + .item {
+        border-left: none;
+    }
+}

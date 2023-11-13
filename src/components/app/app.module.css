@@ -1,0 +1,17 @@
+.app {
+  margin: 0 auto;
+  width: 100%;
+}
+
+.main {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1.25rem;
+
+  width: 47.125rem;
+  margin: 0 auto;
+}
+
+.ticket {
+  grid-column: 2;
+}
