@@ -1,6 +1,6 @@
 import React from 'react';
 import { Header } from '../header';
-import { Filter } from '../filter';
+import Filter from '../filter';
 import { Tabs } from '../tabs';
 import { Ticket } from '../ticket';
 

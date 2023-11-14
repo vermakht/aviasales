@@ -43,6 +43,7 @@
                 "ts": "never",
                 "tsx": "never"
             }
-        ]
+        ],
+        "@typescript-eslint/default-param-last": 1
     }
 }
