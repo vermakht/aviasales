@@ -1,4 +1,4 @@
-import { ActionTypes } from './actions';
+import { ActionTypes } from './filter-actions';
 
 // Типы данных state
 export interface CheckboxState {
@@ -44,7 +44,6 @@ export const filterReducer = (state: CheckboxState = initialState, action: Actio
         ...state,
         [filterName]: isChecked,
       };
-      console.log(updatedState);
 
       const allChecked =
         updatedState.oneTransfer && updatedState.twoTransfers && updatedState.threeTransfers;

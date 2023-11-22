@@ -3,10 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import styles from './filter.module.scss';
 import { RootState } from '../../store/rootReducer';
-import { toggleAllFilters, toggleFilter } from '../../store/actions';
+import { toggleAllFilters, toggleFilter } from '../../store/filter-actions';
 
 const Filter: React.FC = () => {
-  const checkbox = useSelector((state: RootState) => state.checkboxes);
+  const { all, noTransfers, oneTransfer, twoTransfers, threeTransfers } = useSelector(
+    (state: RootState) => state.checkboxes,
+  );
   const dispatch = useDispatch();
 
   const handleToggleAll = (isChecked: boolean) => {
@@ -24,7 +26,7 @@ const Filter: React.FC = () => {
         <input
           type="checkbox"
           className={styles.item}
-          checked={checkbox.all}
+          checked={all}
           onChange={(e) => handleToggleAll(e.target.checked)}
         />
         Все
@@ -33,7 +35,7 @@ const Filter: React.FC = () => {
         <input
           type="checkbox"
           className={styles.item}
-          checked={checkbox.noTransfers}
+          checked={noTransfers}
           onChange={(e) => handleToggleFilter('noTransfers', e.target.checked)}
         />
         Без пересадок
@@ -42,7 +44,7 @@ const Filter: React.FC = () => {
         <input
           type="checkbox"
           className={styles.item}
-          checked={checkbox.oneTransfer}
+          checked={oneTransfer}
           onChange={(e) => handleToggleFilter('oneTransfer', e.target.checked)}
         />
         1 пересадка
@@ -51,7 +53,7 @@ const Filter: React.FC = () => {
         <input
           type="checkbox"
           className={styles.item}
-          checked={checkbox.twoTransfers}
+          checked={twoTransfers}
           onChange={(e) => handleToggleFilter('twoTransfers', e.target.checked)}
         />
         2 пересадка
@@ -60,7 +62,7 @@ const Filter: React.FC = () => {
         <input
           type="checkbox"
           className={styles.item}
-          checked={checkbox.threeTransfers}
+          checked={threeTransfers}
           onChange={(e) => handleToggleFilter('threeTransfers', e.target.checked)}
         />
         3 пересадка
