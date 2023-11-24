@@ -1,52 +1,71 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 import styles from './ticket.module.scss';
+import { RootState } from '../../store/rootReducer';
+import { useAppDispatch } from '../../store/store';
+import { fetchSearchId } from '../../middleware/thunk-search';
+import { fetchTicketsBySearchId } from '../../middleware/thunk-tickets';
+import { convertMinutesToHoursAndMinutes } from '../../utils/flightDurationConverter';
+import { arrayToString } from '../../utils/enumerationToString';
 
-export function Ticket() {
+const Ticket: React.FC = () => {
+  const dispatch = useAppDispatch(); // Заменяем useDispatch на useAppDispatch
+  const { searchId, tickets, stop, isLoadingSearchId, isLoadingTickets, isError, errorMessage } =
+    useSelector((state: RootState) => state.tickets);
+
+  useEffect(() => {
+    // Отправить запрос на получение searchId сразу после монтирования компонента
+    dispatch(fetchSearchId());
+  }, []); // Пустой массив зависимостей гарантирует выполнение только при монтировании
+
+  useEffect(() => {
+    // Проверка, что есть searchId и не идет загрузка поиска и нет флага остановки
+    if (searchId && !isLoadingSearchId && !stop) {
+      dispatch(fetchTicketsBySearchId(searchId));
+    }
+  }, [dispatch, searchId, isLoadingSearchId, stop]);
+
+  // Проверка состояния загрузки и получения данных
+  if (isLoadingSearchId || isLoadingTickets) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {errorMessage}</div>;
+  }
+
+  // Далее можно использовать данные о билетах (tickets) и searchId
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <article className={`${styles['header-item']}`}>13 400 Р</article>
-        <img
-          className={`${styles['column-logo']}`}
-          alt="Logo"
-          height={'36px'}
-          width={'110px'}
-          src="https://c.animaapp.com/HZtlcjuG/img/s7-logo@2x.png"
-        />
-      </header>
-      <section className={styles.group}>
-        <article className={styles.element}>
-          <div className={styles.column}>
-            <div className={`${styles['column-title']}`}>MOW – HKT</div>
-            <div className={`${styles['column-item']}`}>10:45 – 08:00</div>
+      {tickets.map((ticket) => (
+        <div key={ticket.price} className={styles.ticket}>
+          <div className={styles.header}>
+            <div className={styles.price}>{ticket.price} ₽</div>
           </div>
-          <div className={styles.column}>
-            <div className={`${styles['column-title']}`}>В ПУТИ</div>
-            <div className={`${styles['column-item']}`}>21ч 15м</div>
-          </div>
-          <div className={styles.column}>
-            <div className={`${styles['column-title']}`}>2 ПЕРЕСАДКИ</div>
-            <div className={`${styles['column-item']}`}>HKG, JNB</div>
-          </div>
-        </article>
-        <article className={styles.element}>
-          <div className={styles.column}>
-            <div className={`${styles['column-title']}`}>MOW – HKT</div>
-            <div className={`${styles['column-item']}`}>10:45 – 08:00</div>
-          </div>
-          <div className={styles.column}>
-            <div className={`${styles['column-title']}`}>В ПУТИ</div>
-            <div className={`${styles['column-item']}`}>21ч 15м</div>
-          </div>
-          <div className={styles.column}>
-            <div className={`${styles['column-title']}`}>2 ПЕРЕСАДКИ</div>
-            <div className={`${styles['column-item']}`}>HKG, JNB</div>
-          </div>
-        </article>
-      </section>
+
+          {ticket.segments.map((segment) => (
+            <div key={segment.date} className={styles.segment}>
+              <div className={styles.cities}>
+                <div>
+                  {segment.origin} – {segment.destination}
+                </div>
+                <div>{new Date(segment.date).toLocaleString()}</div>
+              </div>
+
+              <div className={styles.duration}>
+                {convertMinutesToHoursAndMinutes(segment.duration)}
+              </div>
+
+              {segment.stops.length > 0 && (
+                <div className={styles.stops}>{arrayToString(segment.stops)}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
-}
+};
 
-export default { Ticket };
+export default Ticket;

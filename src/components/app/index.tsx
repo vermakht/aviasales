@@ -2,7 +2,7 @@ import React from 'react';
 import { Header } from '../header';
 import Filter from '../filter';
 import { Tabs } from '../tabs';
-import { Ticket } from '../ticket';
+import Ticket from '../ticket';
 
 import styles from './app.module.css';
 
