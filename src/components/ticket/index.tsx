@@ -8,6 +8,8 @@ import { fetchSearchId } from '../../middleware/thunk-search';
 import { fetchTicketsBySearchId } from '../../middleware/thunk-tickets';
 import { convertMinutesToHoursAndMinutes } from '../../utils/flightDurationConverter';
 import { arrayToString } from '../../utils/enumerationToString';
+import { formatTimeRange } from '../../utils/departureArrivalTimeConverter';
+import { getStopsEnding } from '../../utils/getStopsEnding';
 
 const Ticket: React.FC = () => {
   const dispatch = useAppDispatch(); // Заменяем useDispatch на useAppDispatch
@@ -22,7 +24,7 @@ const Ticket: React.FC = () => {
   useEffect(() => {
     // Проверка, что есть searchId и не идет загрузка поиска и нет флага остановки
     if (searchId && !isLoadingSearchId && !stop) {
-      dispatch(fetchTicketsBySearchId(searchId));
+      dispatch(fetchTicketsBySearchId());
     }
   }, [dispatch, searchId, isLoadingSearchId, stop]);
 
@@ -35,36 +37,57 @@ const Ticket: React.FC = () => {
     return <div>Error: {errorMessage}</div>;
   }
 
-  // Далее можно использовать данные о билетах (tickets) и searchId
   return (
-    <div className={styles.container}>
-      {tickets.map((ticket) => (
-        <div key={ticket.price} className={styles.ticket}>
-          <div className={styles.header}>
-            <div className={styles.price}>{ticket.price} ₽</div>
-          </div>
-
-          {ticket.segments.map((segment) => (
-            <div key={segment.date} className={styles.segment}>
-              <div className={styles.cities}>
-                <div>
-                  {segment.origin} – {segment.destination}
+    <>
+      {tickets.map((ticket, index) => (
+        <div key={index} className={styles.container}>
+          <header className={styles.header}>
+            <article className={styles['header-item']}>
+              {ticket.price.toLocaleString('ru-RU', {
+                style: 'currency',
+                currency: 'RUB',
+                minimumFractionDigits: 0,
+              })}
+            </article>
+            <img
+              className={styles['column-logo']}
+              alt="Logo"
+              height={'36px'}
+              width={'110px'}
+              src={`https://pics.avs.io/99/36/${ticket.carrier}.png`}
+            />
+          </header>
+          <section className={styles.group}>
+            {ticket.segments.map((segment, segmentIndex) => (
+              <article key={segmentIndex} className={styles.element}>
+                <div className={styles.column}>
+                  <div className={`${styles['column-title']}`}>
+                    {segment.origin} – {segment.destination}
+                  </div>
+                  <div className={`${styles['column-item']}`}>
+                    {formatTimeRange(segment.date, segment.duration)}
+                  </div>
                 </div>
-                <div>{new Date(segment.date).toLocaleString()}</div>
-              </div>
-
-              <div className={styles.duration}>
-                {convertMinutesToHoursAndMinutes(segment.duration)}
-              </div>
-
-              {segment.stops.length > 0 && (
-                <div className={styles.stops}>{arrayToString(segment.stops)}</div>
-              )}
-            </div>
-          ))}
+                <div className={styles.column}>
+                  <div className={`${styles['column-title']}`}>В ПУТИ</div>
+                  <div className={`${styles['column-item']}`}>
+                    {convertMinutesToHoursAndMinutes(segment.duration)}
+                  </div>
+                </div>
+                <div className={styles.column}>
+                  <div className={`${styles['column-title']}`}>
+                    {segment.stops.length === 0
+                      ? 'Без пересадок'
+                      : `${segment.stops.length} ${getStopsEnding(segment.stops.length)}`}
+                  </div>
+                  <div className={`${styles['column-item']}`}>{arrayToString(segment.stops)}</div>
+                </div>
+              </article>
+            ))}
+          </section>
         </div>
       ))}
-    </div>
+    </>
   );
 };
 

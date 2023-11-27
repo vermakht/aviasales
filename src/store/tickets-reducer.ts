@@ -44,20 +44,19 @@ export const ticketsSlice = createSlice({
         state.isLoadingTickets = true;
       })
       .addCase(fetchTicketsBySearchId.fulfilled, (state, action) => {
-        const { tickets, stop } = action.payload;
-        state.tickets = tickets;
-        state.stop = stop;
+        const { tickets, stop } = action.payload || {};
+        if (Array.isArray(state.tickets) && Array.isArray(tickets)) {
+          state.tickets = [...state.tickets, ...tickets];
+        }
+        if (typeof stop === 'boolean') {
+          state.stop = stop;
+        }
         state.isLoadingTickets = false;
       })
       .addCase(fetchTicketsBySearchId.rejected, (state, action) => {
         state.isLoadingTickets = false;
         state.errorMessage = action.error.message ?? null;
       });
-    // .addCase(addTickets, (state, action) => {
-    //   const { tickets } = action.payload;
-    //   state.tickets.push(...tickets);
-    //   state.isLoadingTickets = false;
-    // });
   },
 });
 

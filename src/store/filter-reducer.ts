@@ -5,16 +5,19 @@ export interface CheckboxState {
   [key: string]: boolean;
 }
 
-// Локальное состсояние для хранения чекбоксов
+// Локальное состояние для хранения чекбоксов
 const initialState: CheckboxState = {
   all: false,
   noTransfers: false,
   oneTransfer: false,
   twoTransfers: false,
   threeTransfers: false,
+  cheapest: true,
+  speediest: false,
+  optimal: false,
 };
 
-// Типы данных внутри действий над локальным состсояним для текущего reducer
+// Типы данных внутри действий над локальным состоянием для текущего reducer
 interface Action {
   type: ActionTypes; // Обязательное поле, представляющее тип действия
   payload: {
@@ -25,7 +28,7 @@ interface Action {
 
 export const filterReducer = (state: CheckboxState = initialState, action: Action) => {
   switch (action.type) {
-    case ActionTypes.TOGGLE_ALL:
+    case ActionTypes.TOGGLE_ALL_CHECKBOX:
       const checked = action.payload.isChecked;
       return {
         ...state,
@@ -36,7 +39,7 @@ export const filterReducer = (state: CheckboxState = initialState, action: Actio
         threeTransfers: checked,
       };
 
-    case ActionTypes.TOGGLE_FILTER:
+    case ActionTypes.TOGGLE_FILTER_CHECKBOX:
       const { filterName, isChecked } = action.payload;
 
       // Обновляем состояние переданного фильтра
@@ -51,6 +54,30 @@ export const filterReducer = (state: CheckboxState = initialState, action: Actio
       return {
         ...updatedState,
         all: allChecked,
+      };
+
+    case ActionTypes.TOGGLE_TAB_CHEAPEST:
+      return {
+        ...state,
+        cheapest: true,
+        speediest: false,
+        optimal: false,
+      };
+
+    case ActionTypes.TOGGLE_TAB_SPEEDIEST:
+      return {
+        ...state,
+        cheapest: false,
+        speediest: true,
+        optimal: false,
+      };
+
+    case ActionTypes.TOGGLE_TAB_OPTIMAL:
+      return {
+        ...state,
+        cheapest: false,
+        speediest: false,
+        optimal: true,
       };
 
     default:

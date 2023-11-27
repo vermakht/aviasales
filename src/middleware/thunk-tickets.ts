@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { RootState } from '../store/rootReducer';
 
 export interface Tickets {
   price: number;
@@ -20,13 +21,17 @@ interface TicketSegment {
 // Thunk-действие для получения билетов по searchId
 export const fetchTicketsBySearchId = createAsyncThunk(
   'tickets/fetchTicketsBySearchId',
-  async (searchId: string) => {
+  async (_, { getState }) => {
+    const state = getState() as RootState;
+
     try {
       const response = await fetch(
-        `https://aviasales-test-api.kata.academy/tickets?searchId=${searchId}`,
+        `https://aviasales-test-api.kata.academy/tickets?searchId=${state.tickets.searchId}`,
       );
-      const data = (await response.json()) as TicketSegment;
-      return { tickets: data.tickets, stop: data.stop };
+      if (response.ok) {
+        const { tickets, stop } = (await response.json()) as TicketSegment;
+        return { tickets, stop };
+      }
     } catch (error) {
       throw new Error(String(error.message));
     }
