@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { Spin } from 'antd';
 
 import styles from './ticket.module.scss';
 import { RootState } from '../../store/rootReducer';
@@ -29,8 +30,12 @@ const Ticket: React.FC = () => {
   }, [dispatch, searchId, isLoadingSearchId, stop]);
 
   // Проверка состояния загрузки и получения данных
-  if (isLoadingSearchId || isLoadingTickets) {
-    return <div>Loading...</div>;
+  if (isLoadingSearchId && isLoadingTickets) {
+    return (
+      <section className={styles['container-spin']}>
+        <Spin />
+      </section>
+    );
   }
 
   if (isError) {

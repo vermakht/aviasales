@@ -1,4 +1,4 @@
-import { ActionTypes } from './filter-actions';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Типы данных state
 export interface CheckboxState {
@@ -17,32 +17,26 @@ const initialState: CheckboxState = {
   optimal: false,
 };
 
-// Типы данных внутри действий над локальным состоянием для текущего reducer
-interface Action {
-  type: ActionTypes; // Обязательное поле, представляющее тип действия
-  payload: {
-    filterName: string;
-    isChecked: boolean;
-  }; // Опциональное поле, содержащее данные, связанные с действием
-}
-
-export const filterReducer = (state: CheckboxState = initialState, action: Action) => {
-  switch (action.type) {
-    case ActionTypes.TOGGLE_ALL_CHECKBOX:
-      const checked = action.payload.isChecked;
+const filtersSlice = createSlice({
+  name: 'falters',
+  initialState,
+  reducers: {
+    toggleAllCheckbox(state: CheckboxState, action: PayloadAction<{ isChecked: boolean }>) {
+      const { isChecked } = action.payload;
       return {
         ...state,
-        all: checked,
-        noTransfers: checked,
-        oneTransfer: checked,
-        twoTransfers: checked,
-        threeTransfers: checked,
+        all: isChecked,
+        noTransfers: isChecked,
+        oneTransfer: isChecked,
+        twoTransfers: isChecked,
+        threeTransfers: isChecked,
       };
-
-    case ActionTypes.TOGGLE_FILTER_CHECKBOX:
+    },
+    toggleFilterCheckbox(
+      state: CheckboxState,
+      action: PayloadAction<{ filterName: string; isChecked: boolean }>,
+    ) {
       const { filterName, isChecked } = action.payload;
-
-      // Обновляем состояние переданного фильтра
       const updatedState = {
         ...state,
         [filterName]: isChecked,
@@ -55,32 +49,41 @@ export const filterReducer = (state: CheckboxState = initialState, action: Actio
         ...updatedState,
         all: allChecked,
       };
-
-    case ActionTypes.TOGGLE_TAB_CHEAPEST:
+    },
+    toggleTabCheapest(state: CheckboxState) {
       return {
         ...state,
         cheapest: true,
         speediest: false,
         optimal: false,
       };
-
-    case ActionTypes.TOGGLE_TAB_SPEEDIEST:
+    },
+    toggleTabSpeediest(state: CheckboxState) {
       return {
         ...state,
         cheapest: false,
         speediest: true,
         optimal: false,
       };
-
-    case ActionTypes.TOGGLE_TAB_OPTIMAL:
+    },
+    toggleTabOptimal(state: CheckboxState) {
       return {
         ...state,
         cheapest: false,
         speediest: false,
         optimal: true,
       };
+    },
+  },
+  extraReducers: () => {},
+});
 
-    default:
-      return state;
-  }
-};
+export const {
+  toggleAllCheckbox,
+  toggleFilterCheckbox,
+  toggleTabCheapest,
+  toggleTabSpeediest,
+  toggleTabOptimal,
+} = filtersSlice.actions;
+
+export const { reducer: filtersReducer } = filtersSlice;

@@ -4,20 +4,20 @@ import { useSelector } from 'react-redux';
 import styles from './filter.module.scss';
 import { RootState } from '../../store/rootReducer';
 import { useAppDispatch } from '../../store/store';
-import { toggleAllFilters, toggleFilter } from '../../store/filter-actions';
+import { toggleFilterCheckbox, toggleAllCheckbox } from '../../store/filter-reducer';
 
 const Filter: React.FC = () => {
-  const { all, noTransfers, oneTransfer, twoTransfers, threeTransfers } = useSelector(
-    (state: RootState) => state.checkboxes,
-  );
   const dispatch = useAppDispatch();
+  const { all, noTransfers, oneTransfer, twoTransfers, threeTransfers } = useSelector(
+    (state: RootState) => state.filters,
+  );
 
   const handleToggleAll = (isChecked: boolean) => {
-    dispatch(toggleAllFilters(isChecked));
+    dispatch(toggleAllCheckbox({ isChecked }));
   };
 
   const handleToggleFilter = (filterName: string, isChecked: boolean) => {
-    dispatch(toggleFilter(filterName, isChecked));
+    dispatch(toggleFilterCheckbox({ filterName, isChecked }));
   };
 
   return (

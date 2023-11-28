@@ -8,10 +8,10 @@ import {
   toggleTabCheapest,
   toggleTabSpeediest,
   toggleTabOptimal,
-} from '../../store/filter-actions';
+} from '../../store/filter-reducer';
 
 const Tabs: React.FC = () => {
-  const { cheapest, speediest, optimal } = useSelector((state: RootState) => state.checkboxes);
+  const { cheapest, speediest, optimal } = useSelector((state: RootState) => state.filters);
   const dispatch = useAppDispatch();
 
   const handleTabCheapest = () => {

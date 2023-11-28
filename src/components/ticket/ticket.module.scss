@@ -8,6 +8,15 @@
 
     margin-top: 1.25rem;
     border-radius: $border-radius;
+
+    &-spin {
+        margin: 20px 0;
+        margin-bottom: 20px;
+        padding: 30px 50px;
+        text-align: center;
+        border-radius: $border-radius;
+
+    }
 }
 
 .header {
