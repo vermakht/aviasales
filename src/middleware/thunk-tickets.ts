@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { RootState } from '../store/rootReducer';
+import { RootState } from '../store/root-reducer';
 
 export interface Tickets {
   price: number;

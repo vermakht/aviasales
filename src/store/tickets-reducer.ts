@@ -1,22 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchSearchId } from '../middleware/thunk-search';
 import { fetchTicketsBySearchId, Tickets } from '../middleware/thunk-tickets';
-import { sortTicketsByPrice } from '../utils/sortTicketsByPrice';
-import {
-  toggleAllCheckbox,
-  toggleFilterCheckbox,
-  toggleTabCheapest,
-  toggleTabOptimal,
-  toggleTabSpeediest,
-} from './filter-reducer';
-import { sortTicketsByFastest } from '../utils/sortTicketsByFastest';
-import { sortTicketsByOptimal } from '../utils/sortTicketsByOptimal';
-import { filterByTransfers } from '../utils/filterByTransfers';
-import { RootState } from './rootReducer';
 
 interface TicketsState {
   tickets: Tickets[];
-  sortedTickets: Tickets[];
   searchId: string;
   stop: boolean;
   isLoadingSearchId: boolean;
@@ -28,7 +15,6 @@ interface TicketsState {
 // Начальное состояние
 const initialState: TicketsState = {
   tickets: [],
-  sortedTickets: [],
   searchId: '',
   stop: false,
   isLoadingSearchId: false,
@@ -64,7 +50,6 @@ export const ticketsSlice = createSlice({
         const { tickets, stop } = action.payload || {};
         if (Array.isArray(state.tickets) && Array.isArray(tickets)) {
           state.tickets = [...state.tickets, ...tickets];
-          state.sortedTickets = sortTicketsByPrice(state.tickets);
         }
         if (typeof stop === 'boolean') {
           state.stop = stop;
@@ -75,21 +60,6 @@ export const ticketsSlice = createSlice({
         state.isLoadingTickets = false;
         state.errorMessage = action.error.message ?? null;
         state.isErrorTicketsBySearchId = true;
-      })
-      .addCase(toggleAllCheckbox, (state) => {
-        state.sortedTickets = filterByTransfers(state.tickets, stateFilter);
-      })
-      .addCase(toggleFilterCheckbox, (state) => {
-        state.sortedTickets = filterByTransfers(state.tickets, stateFilter);
-      })
-      .addCase(toggleTabCheapest, (state) => {
-        state.sortedTickets = sortTicketsByPrice(state.tickets);
-      })
-      .addCase(toggleTabSpeediest, (state) => {
-        state.sortedTickets = sortTicketsByFastest(state.tickets);
-      })
-      .addCase(toggleTabOptimal, (state) => {
-        state.sortedTickets = sortTicketsByOptimal(state.tickets);
       });
   },
 });

@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 import { useDispatch } from 'react-redux';
 
-import { rootReducer } from './rootReducer'; // rootReducer, объединяющий все редьюсеры
+import { rootReducer } from './root-reducer'; // rootReducer, объединяющий все редьюсеры
 
 // Создание хранилища Redux с rootReducer и начальным состоянием
 export const store = configureStore({

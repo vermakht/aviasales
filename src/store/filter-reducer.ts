@@ -18,7 +18,7 @@ const initialState: CheckboxState = {
 };
 
 const filtersSlice = createSlice({
-  name: 'falters',
+  name: 'filters',
   initialState,
   reducers: {
     toggleAllCheckbox(state: CheckboxState, action: PayloadAction<{ isChecked: boolean }>) {
