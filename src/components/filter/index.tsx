@@ -1,20 +1,47 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 import styles from './filter.module.scss';
-import { RootState } from '../../store/rootReducer';
-import { toggleAllFilters, toggleFilter } from '../../store/actions';
+import { RootState } from '../../store/root-reducer';
+import { useAppDispatch } from '../../store/store';
+import { toggleFilterCheckbox, toggleAllCheckbox } from '../../store/filter-reducer';
+import { filterByTransfers } from '../../utils/filterByTransfers';
+import { filterTickets } from '../../store/sorted-tickets-reducer';
 
 const Filter: React.FC = () => {
-  const checkbox = useSelector((state: RootState) => state.checkboxes);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const { all, noTransfers, oneTransfer, twoTransfers, threeTransfers } = useSelector(
+    (state: RootState) => state.filters,
+  );
+  const { tickets } = useSelector((state: RootState) => state.tickets);
+
+  useEffect(() => {
+    let filteredTickets = [...tickets]; // Создание копии исходного массива билетов
+
+    if (!all) {
+      if (noTransfers) {
+        filteredTickets = filterByTransfers(tickets, 'noTransfers');
+      }
+      if (oneTransfer) {
+        filteredTickets = filterByTransfers(tickets, 'oneTransfer');
+      }
+      if (twoTransfers) {
+        filteredTickets = filterByTransfers(tickets, 'twoTransfers');
+      }
+      if (threeTransfers) {
+        filteredTickets = filterByTransfers(tickets, 'threeTransfers');
+      }
+    }
+
+    dispatch(filterTickets({ tickets: filteredTickets }));
+  }, [all, noTransfers, oneTransfer, twoTransfers, threeTransfers, dispatch, tickets]);
 
   const handleToggleAll = (isChecked: boolean) => {
-    dispatch(toggleAllFilters(isChecked));
+    dispatch(toggleAllCheckbox({ isChecked }));
   };
 
   const handleToggleFilter = (filterName: string, isChecked: boolean) => {
-    dispatch(toggleFilter(filterName, isChecked));
+    dispatch(toggleFilterCheckbox({ filterName, isChecked }));
   };
 
   return (
@@ -24,7 +51,7 @@ const Filter: React.FC = () => {
         <input
           type="checkbox"
           className={styles.item}
-          checked={checkbox.all}
+          checked={all}
           onChange={(e) => handleToggleAll(e.target.checked)}
         />
         Все
@@ -33,7 +60,7 @@ const Filter: React.FC = () => {
         <input
           type="checkbox"
           className={styles.item}
-          checked={checkbox.noTransfers}
+          checked={noTransfers}
           onChange={(e) => handleToggleFilter('noTransfers', e.target.checked)}
         />
         Без пересадок
@@ -42,7 +69,7 @@ const Filter: React.FC = () => {
         <input
           type="checkbox"
           className={styles.item}
-          checked={checkbox.oneTransfer}
+          checked={oneTransfer}
           onChange={(e) => handleToggleFilter('oneTransfer', e.target.checked)}
         />
         1 пересадка
@@ -51,7 +78,7 @@ const Filter: React.FC = () => {
         <input
           type="checkbox"
           className={styles.item}
-          checked={checkbox.twoTransfers}
+          checked={twoTransfers}
           onChange={(e) => handleToggleFilter('twoTransfers', e.target.checked)}
         />
         2 пересадка
@@ -60,7 +87,7 @@ const Filter: React.FC = () => {
         <input
           type="checkbox"
           className={styles.item}
-          checked={checkbox.threeTransfers}
+          checked={threeTransfers}
           onChange={(e) => handleToggleFilter('threeTransfers', e.target.checked)}
         />
         3 пересадка

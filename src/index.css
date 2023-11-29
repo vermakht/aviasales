@@ -6,10 +6,8 @@ body {
 
 #root {
     display: grid;
-
-    height: 100vh;
     width: 60rem;
-
+    min-height: 100vh;
     margin: 0 auto;
-    background: #F3F7FA;
+    background-color: #F3F7FA;
 }

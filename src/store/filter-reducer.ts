@@ -1,50 +1,46 @@
-import { ActionTypes } from './actions';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Типы данных state
 export interface CheckboxState {
   [key: string]: boolean;
 }
 
-// Локальное состсояние для хранения чекбоксов
+// Локальное состояние для хранения чекбоксов
 const initialState: CheckboxState = {
   all: false,
   noTransfers: false,
   oneTransfer: false,
   twoTransfers: false,
   threeTransfers: false,
+  cheapest: false,
+  speediest: false,
+  optimal: false,
 };
 
-// Типы данных внутри действий над локальным состсояним для текущего reducer
-interface Action {
-  type: ActionTypes; // Обязательное поле, представляющее тип действия
-  payload: {
-    filterName: string;
-    isChecked: boolean;
-  }; // Опциональное поле, содержащее данные, связанные с действием
-}
-
-export const filterReducer = (state: CheckboxState = initialState, action: Action) => {
-  switch (action.type) {
-    case ActionTypes.TOGGLE_ALL:
-      const checked = action.payload.isChecked;
+const filtersSlice = createSlice({
+  name: 'filters',
+  initialState,
+  reducers: {
+    toggleAllCheckbox(state: CheckboxState, action: PayloadAction<{ isChecked: boolean }>) {
+      const { isChecked } = action.payload;
       return {
         ...state,
-        all: checked,
-        noTransfers: checked,
-        oneTransfer: checked,
-        twoTransfers: checked,
-        threeTransfers: checked,
+        all: isChecked,
+        noTransfers: isChecked,
+        oneTransfer: isChecked,
+        twoTransfers: isChecked,
+        threeTransfers: isChecked,
       };
-
-    case ActionTypes.TOGGLE_FILTER:
+    },
+    toggleFilterCheckbox(
+      state: CheckboxState,
+      action: PayloadAction<{ filterName: string; isChecked: boolean }>,
+    ) {
       const { filterName, isChecked } = action.payload;
-
-      // Обновляем состояние переданного фильтра
       const updatedState = {
         ...state,
         [filterName]: isChecked,
       };
-      console.log(updatedState);
 
       const allChecked =
         updatedState.oneTransfer && updatedState.twoTransfers && updatedState.threeTransfers;
@@ -53,8 +49,41 @@ export const filterReducer = (state: CheckboxState = initialState, action: Actio
         ...updatedState,
         all: allChecked,
       };
+    },
+    toggleTabCheapest(state: CheckboxState) {
+      return {
+        ...state,
+        cheapest: true,
+        speediest: false,
+        optimal: false,
+      };
+    },
+    toggleTabSpeediest(state: CheckboxState) {
+      return {
+        ...state,
+        cheapest: false,
+        speediest: true,
+        optimal: false,
+      };
+    },
+    toggleTabOptimal(state: CheckboxState) {
+      return {
+        ...state,
+        cheapest: false,
+        speediest: false,
+        optimal: true,
+      };
+    },
+  },
+  extraReducers: () => {},
+});
 
-    default:
-      return state;
-  }
-};
+export const {
+  toggleAllCheckbox,
+  toggleFilterCheckbox,
+  toggleTabCheapest,
+  toggleTabSpeediest,
+  toggleTabOptimal,
+} = filtersSlice.actions;
+
+export const { reducer: filtersReducer } = filtersSlice;
