@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Spin } from 'antd';
+import { Spin, Alert } from 'antd';
 
 import styles from './ticket.module.scss';
+import iconError from '../../images/icon-error-message.png';
 import { RootState } from '../../store/rootReducer';
 import { useAppDispatch } from '../../store/store';
 import { fetchSearchId } from '../../middleware/thunk-search';
@@ -14,13 +15,29 @@ import { getStopsEnding } from '../../utils/getStopsEnding';
 
 const Ticket: React.FC = () => {
   const dispatch = useAppDispatch(); // Заменяем useDispatch на useAppDispatch
-  const { searchId, tickets, stop, isLoadingSearchId, isLoadingTickets, isError, errorMessage } =
-    useSelector((state: RootState) => state.tickets);
+  const {
+    searchId,
+    sortedTickets,
+    stop,
+    isLoadingSearchId,
+    isLoadingTickets,
+    isErrorSearchId,
+    isErrorTicketsBySearchId,
+  } = useSelector((state: RootState) => state.tickets);
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const perPage = 5;
+
+  const displayTickets = sortedTickets.slice(currentPage * perPage, (currentPage + 1) * perPage);
+
+  const loadMore = () => {
+    setCurrentPage(currentPage + 1);
+  };
 
   useEffect(() => {
     // Отправить запрос на получение searchId сразу после монтирования компонента
     dispatch(fetchSearchId());
-  }, []); // Пустой массив зависимостей гарантирует выполнение только при монтировании
+  }, [dispatch]); // Пустой массив зависимостей гарантирует выполнение только при монтировании
 
   useEffect(() => {
     // Проверка, что есть searchId и не идет загрузка поиска и нет флага остановки
@@ -30,7 +47,7 @@ const Ticket: React.FC = () => {
   }, [dispatch, searchId, isLoadingSearchId, stop]);
 
   // Проверка состояния загрузки и получения данных
-  if (isLoadingSearchId && isLoadingTickets) {
+  if (isLoadingTickets || isLoadingSearchId) {
     return (
       <section className={styles['container-spin']}>
         <Spin />
@@ -38,13 +55,23 @@ const Ticket: React.FC = () => {
     );
   }
 
-  if (isError) {
-    return <div>Error: {errorMessage}</div>;
+  if (isErrorSearchId || isErrorTicketsBySearchId) {
+    return (
+      <article style={{ marginTop: '20px', color: 'red' }}>
+        <Alert
+          message="Ошибка загрузки данных"
+          description="Извините за неудобства! Возникла проблема при обработке вашего запроса для получения билетов. Мы уже работаем над исправлением этой ошибки. Пожалуйста, попробуйте еще раз позже или обратитесь в нашу службу поддержки для помощи. Благодарим за ваше терпение и понимание!"
+          type="error"
+          showIcon
+          icon={<img src={iconError} alt="Error Icon" height={'30px'} width={'30px'} />}
+        />
+      </article>
+    );
   }
 
   return (
     <>
-      {tickets.map((ticket, index) => (
+      {displayTickets.map((ticket, index) => (
         <div key={index} className={styles.container}>
           <header className={styles.header}>
             <article className={styles['header-item']}>
@@ -92,6 +119,9 @@ const Ticket: React.FC = () => {
           </section>
         </div>
       ))}
+      <button className={styles['button-item']} onClick={loadMore}>
+        Загрузить ещё 10 билетов
+      </button>
     </>
   );
 };

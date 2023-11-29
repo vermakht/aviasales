@@ -11,11 +11,14 @@
 
     &-spin {
         margin: 20px 0;
-        margin-bottom: 20px;
-        padding: 30px 50px;
-        text-align: center;
+        width: 31.375rem;
+        height: 11.5rem;
+        background: #FFF;
         border-radius: $border-radius;
 
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }
 
@@ -60,4 +63,16 @@
     &-item {
         font-size: 0.875rem;
     }
+}
+
+.button-item {
+    margin: 20px auto;
+    letter-spacing: 0.03125rem;
+
+    width: 10.5rem;
+    height: 3.125rem;
+    background: #2196F3;
+    border: none;
+    border-radius: $border-radius;
+    color: #FFF;
 }

@@ -12,7 +12,7 @@ const initialState: CheckboxState = {
   oneTransfer: false,
   twoTransfers: false,
   threeTransfers: false,
-  cheapest: true,
+  cheapest: false,
   speediest: false,
   optimal: false,
 };
